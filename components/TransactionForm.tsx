@@ -387,7 +387,7 @@ export default function TransactionForm() {
                   <option value="">Select Debt Type</option>
                   <option value="lending">💸 Lending (I lend money)</option>
                   <option value="borrowing">💰 Borrowing (I borrow money)</option>
-                  <option value="sending">📤 Sending (I pay off debt)</option>
+                  <option value="paying">📤 Sending (I pay off debt)</option>
                   <option value="receiving">📥 Receiving (They pay me back)</option>
                 </select>
               </div>
@@ -405,7 +405,7 @@ export default function TransactionForm() {
                   required
                 />
               </div>
-              {(formData.debt_type === 'lending' || formData.debt_type === 'sending' || formData.debt_type === 'receiving') && (
+              {(formData.debt_type === 'lending' || formData.debt_type === 'paying' || formData.debt_type === 'receiving') && (
                 <div>
                   <label className="block text-sm font-bold mb-2 uppercase tracking-wider" 
                          style={{ color: 'var(--text-muted)' }}>
