@@ -54,7 +54,7 @@ export default function TransactionList() {
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="inline-block w-16 h-16 border-4 rounded-full animate-spin" 
-               style={{ borderColor: 'var(--blue-primary)', borderTopColor: 'transparent' }}></div>
+              style={{ borderColor: 'var(--blue-primary)', borderTopColor: 'transparent' }}></div>
           <p className="mt-4" style={{ color: 'var(--text-muted)' }}>Loading transactions...</p>
         </div>
       </div>
@@ -76,7 +76,9 @@ export default function TransactionList() {
                 Transaction History
               </h2>
               <p className="text-xs sm:text-sm" style={{ color: 'var(--text-muted)' }}>
-                Showing {transactions.length} of {total} transactions {filterType !== 'all' && `(${filterType})`}
+                <p className="text-xs sm:text-sm" style={{ color: 'var(--text-muted)' }}>
+                  Showing {((page - 1) * limit) + 1}-{Math.min(page * limit, total)} of {total} transactions {filterType !== 'all' && `(${filterType})`}
+                </p>
               </p>
             </div>
           </div>
@@ -126,7 +128,7 @@ export default function TransactionList() {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((txn) => (
+              {(transactions || []).map((txn) => (
                 <tr key={txn.id}>
                   <td className="px-4 py-3 whitespace-nowrap text-sm" style={{ color: 'var(--text-secondary)' }}>
                     {new Date(txn.date).toLocaleDateString('en-IN')}
@@ -164,7 +166,7 @@ export default function TransactionList() {
         </div>
 
         {/* Pagination Controls */}
-        {totalPages > 1 && (
+        {totalPages > 1 && (transactions || []).length > 0 && (
           <div className="mt-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
               Page {page} of {totalPages}
@@ -204,7 +206,7 @@ export default function TransactionList() {
           </div>
         )}
 
-        {transactions.length === 0 && (
+        {(transactions || []).length === 0 && !loading && (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">📭</div>
             <p className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>

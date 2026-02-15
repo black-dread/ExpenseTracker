@@ -46,8 +46,8 @@ export default function AccountsPanel() {
           name: formData.name,
           account_type: formData.account_type,
           balance: parseFloat(formData.balance),
-          include_in_net_worth: true,
-          show_in_investments: false
+          include_in_net_worth: formData.include_in_net_worth,
+          show_in_investments: formData.show_in_investments
         })
       });
 
