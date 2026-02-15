@@ -18,7 +18,7 @@ export interface Category {
 }
 
 export type TransactionType = 'expense' | 'income' | 'transfer' | 'debt';
-export type DebtType = 'lending' | 'borrowing' | 'sending' | 'receiving';
+export type DebtType = 'lending' | 'borrowing' | 'paying' | 'receiving';
 
 export interface Transaction {
   id: number;
