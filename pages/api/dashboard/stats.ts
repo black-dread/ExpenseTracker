@@ -102,7 +102,10 @@ export default async function handler(
         TO_CHAR(date, 'YYYY-MM') as month,
         SUM(amount) as spending
       FROM transactions
-      WHERE transaction_type = 'expense'
+      WHERE (
+        (transaction_type = 'expense')
+        OR (transaction_type = 'debt' AND debt_type = 'borrowing')
+      )
       AND date >= NOW() - INTERVAL '12 months'
       GROUP BY TO_CHAR(date, 'YYYY-MM')
       ORDER BY month DESC
