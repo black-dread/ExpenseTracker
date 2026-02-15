@@ -1,0 +1,12 @@
+🔧 7. Set Up Automatic Daily Recording (Optional)
+For automatic 2PM daily updates, you have a few options:
+Option A: Vercel Cron (Recommended if using Vercel)
+Create vercel.json in your project root:
+json{
+  "crons": [
+    {
+      "path": "/api/networth/record",
+      "schedule": "0 14 * * *"
+    }
+  ]
+}
