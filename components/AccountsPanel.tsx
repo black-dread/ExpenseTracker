@@ -9,10 +9,13 @@ export default function AccountsPanel() {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    account_type: 'bank' as Account['account_type'],
-    balance: '0'
-  });
+      name: '',
+      account_type: 'Bank' as Account['account_type'],
+      balance: '0',
+      include_in_net_worth: true,
+      show_in_investments: false
+    });
+
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   useEffect(() => {
@@ -42,13 +45,15 @@ export default function AccountsPanel() {
         body: JSON.stringify({
           name: formData.name,
           account_type: formData.account_type,
-          balance: parseFloat(formData.balance)
-        }),
+          balance: parseFloat(formData.balance),
+          include_in_net_worth: true,
+          show_in_investments: false
+        })
       });
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'Account added successfully! 🎉' });
-        setFormData({ name: '', account_type: 'bank', balance: '0' });
+        setFormData({ name: '', account_type: 'Bank', balance: '0', include_in_net_worth: true,show_in_investments: false });
         setShowAddForm(false);
         fetchAccounts();
         setTimeout(() => setMessage(null), 3000);
@@ -198,10 +203,12 @@ const sortedAccounts = groupOrder.flatMap(type => groupedAccounts[type] || []);
                 onChange={(e) => setFormData({ ...formData, account_type: e.target.value as Account['account_type'] })}
                 className="input-field w-full"
               >
-                <option value="bank">🏦 Bank Account</option>
-                <option value="credit_card">💳 Credit Card</option>
-                <option value="cash">💵 Cash</option>
-                <option value="investment">📈 Investment</option>
+                <option value="Bank">🏦 Bank Account</option>
+                <option value="Credit">💳 Credit Card</option>
+                <option value="Cash">💵 Cash</option>
+                <option value="Debit">💼 Debit</option>
+                <option value="Investments">📈 Investment</option>
+                
               </select>
             </div>
             
@@ -220,6 +227,35 @@ const sortedAccounts = groupOrder.flatMap(type => groupedAccounts[type] || []);
               />
             </div>
             
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="includeNetWorth"
+                  checked={formData.include_in_net_worth}
+                  onChange={(e) => setFormData({ ...formData, include_in_net_worth: e.target.checked })}
+                  className="w-4 h-4 rounded"
+                  style={{ accentColor: 'var(--blue-primary)' }}
+                />
+                <label htmlFor="includeNetWorth" className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>
+                  Include in Net Worth
+                </label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="showInvestments"
+                  checked={formData.show_in_investments}
+                  onChange={(e) => setFormData({ ...formData, show_in_investments: e.target.checked })}
+                  className="w-4 h-4 rounded"
+                  style={{ accentColor: 'var(--blue-primary)' }}
+                />
+                <label htmlFor="showInvestments" className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>
+                  Show in Investments Page
+                </label>
+              </div>
+            </div>
             <button type="submit" className="btn-primary w-full">
               ✨ Create Account
             </button>

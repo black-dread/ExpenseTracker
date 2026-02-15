@@ -18,7 +18,7 @@ export default function TransactionForm() {
     debt_type: '' as DebtType | '',
     involved_account_id: '',
     counterparty_name: '',
-    is_benki: false,
+    is_refund: false,
     notes: ''
   });
 
@@ -56,7 +56,7 @@ export default function TransactionForm() {
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
         amount: parseFloat(formData.amount),
         transaction_type: transactionType,
-        is_benki: formData.is_benki,
+        is_refund: formData.is_refund,
         notes: formData.notes || null,
       };
 
@@ -103,7 +103,7 @@ export default function TransactionForm() {
           debt_type: '',
           involved_account_id: '',
           counterparty_name: '',
-          is_benki: false,
+          is_refund: false,
           notes: ''
         });
         setTimeout(() => setMessage(null), 3000);
@@ -311,11 +311,11 @@ export default function TransactionForm() {
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-opacity-50" 
                    style={{ backgroundColor: 'var(--bg-secondary)' }}
-                   onClick={() => setFormData({ ...formData, is_benki: !formData.is_benki })}>
+                   onClick={() => setFormData({ ...formData, is_refund: !formData.is_refund })}>
                 <input
                   type="checkbox"
-                  checked={formData.is_benki}
-                  onChange={(e) => setFormData({ ...formData, is_benki: e.target.checked })}
+                  checked={formData.is_refund}
+                  onChange={(e) => setFormData({ ...formData, is_refund: e.target.checked })}
                   className="w-5 h-5 rounded"
                   style={{ accentColor: 'var(--blue-primary)' }}
                 />

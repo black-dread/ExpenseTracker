@@ -19,11 +19,18 @@ export default async function handler(
     }
   } else if (req.method === 'POST') {
     try {
-      const { name, account_type, balance } = req.body;
+      const { name, account_type, balance, include_in_net_worth, show_in_investments } = req.body;
       
       const result = await sql`
-        INSERT INTO accounts (name, account_type, balance, is_virtual, include_in_net_worth)
-        VALUES (${name}, ${account_type}, ${balance || 0}, false, true)
+        INSERT INTO accounts (name, account_type, balance, is_virtual, include_in_net_worth, show_in_investments)
+        VALUES (
+          ${name}, 
+          ${account_type}, 
+          ${balance || 0}, 
+          false, 
+          ${include_in_net_worth !== false}, 
+          ${show_in_investments || false}
+        )
         RETURNING *
       `;
       

@@ -8,9 +8,9 @@ export default async function handler(
 ) {
   if (req.method === 'GET') {
     try {
-      const { limit = '100', offset = '0', type } = req.query;
+      const { limit = '25', offset = '0', type } = req.query;
       
-      let query = `
+      let query = sql`
         SELECT 
           t.*,
           c.name as category_name,
@@ -28,14 +28,33 @@ export default async function handler(
         LEFT JOIN accounts inv ON t.involved_account_id = inv.id
       `;
       
-      if (type) {
-        query += ` WHERE t.transaction_type = '${type}'`;
+      if (type && type !== 'all') {
+        query = sql`${query} WHERE t.transaction_type = ${type}`;
       }
       
-      query += ` ORDER BY t.date DESC, t.created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+      query = sql`
+        ${query}
+        ORDER BY t.date DESC, t.created_at DESC
+        LIMIT ${parseInt(limit as string)}
+        OFFSET ${parseInt(offset as string)}
+      `;
       
-      const transactions = await sql(query);
-      res.status(200).json(transactions);
+      const transactions = await query;
+      
+      // Get total count for pagination
+      const countQuery = type && type !== 'all'
+        ? sql`SELECT COUNT(*) as total FROM transactions WHERE transaction_type = ${type}`
+        : sql`SELECT COUNT(*) as total FROM transactions`;
+      
+      const countResult = await countQuery;
+      const total = Number(countResult[0]?.total || 0);
+      
+      res.status(200).json({
+        transactions,
+        total,
+        limit: parseInt(limit as string),
+        offset: parseInt(offset as string)
+      });
     } catch (error) {
       console.error('Error fetching transactions:', error);
       res.status(500).json({ error: 'Failed to fetch transactions' });
@@ -65,7 +84,7 @@ export default async function handler(
           ${dto.debt_type || null},
           ${dto.involved_account_id || null},
           ${dto.counterparty_name || null},
-          ${dto.is_benki || false},
+          ${dto.is_refund || false},
           ${dto.notes || null}
         )
         RETURNING *

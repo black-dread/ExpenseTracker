@@ -32,6 +32,7 @@ export default async function handler(
       SELECT COALESCE(SUM(amount), 0) as total
       FROM transactions
       WHERE transaction_type = 'income'
+      AND is_refund = false
       AND date >= ${monthStart}
       AND date < ${monthEnd}
     `;
@@ -95,6 +96,23 @@ export default async function handler(
       netWorthHistory.push({ date: today, net_worth: totalBalance });
     }
 
+    // Get last 12 months spending
+    const monthlySpendHistory = await sql`
+      SELECT 
+        TO_CHAR(date, 'YYYY-MM') as month,
+        SUM(amount) as spending
+      FROM transactions
+      WHERE transaction_type = 'expense'
+      AND date >= NOW() - INTERVAL '12 months'
+      GROUP BY TO_CHAR(date, 'YYYY-MM')
+      ORDER BY month DESC
+      LIMIT 12
+    `;
+
+    const averageMonthlySpend = monthlySpendHistory.length > 0
+      ? monthlySpendHistory.reduce((sum, m) => sum + Number(m.spending), 0) / monthlySpendHistory.length
+      : 0;
+
     const stats: DashboardStats = {
       totalBalance,
       monthlyIncome,
@@ -107,7 +125,12 @@ export default async function handler(
       netWorthHistory: (netWorthHistory || []).map(row => ({
         date: row.date,
         net_worth: Number(row.net_worth)
-      }))
+      })),
+      monthlySpendHistory: (monthlySpendHistory || []).map(row => ({
+        month: row.month,
+        spending: Number(row.spending)
+      })).reverse(), // Reverse to show oldest first
+      averageMonthlySpend
     };
 
     res.status(200).json(stats);

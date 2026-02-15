@@ -1,10 +1,11 @@
 export interface Account {
   id: number;
   name: string;
-  account_type: 'bank' | 'credit_card' | 'cash' | 'investment' | 'virtual';
+  account_type: 'Bank' | 'Credit' | 'Cash' | 'Debit' | 'Investments';
   balance: number;
   is_virtual: boolean;
   include_in_net_worth: boolean;
+  show_in_investments: boolean; // NEW
   created_at: string;
   updated_at: string;
 }
@@ -43,7 +44,7 @@ export interface Transaction {
   involved_account_id?: number;
   counterparty_name?: string;
   
-  is_benki: boolean;
+  is_refund: boolean;
   notes?: string;
   created_at: string;
   updated_at: string;
@@ -73,7 +74,7 @@ export interface CreateTransactionDTO {
   debt_type?: DebtType;
   involved_account_id?: number;
   counterparty_name?: string;
-  is_benki?: boolean;
+  is_refund?: boolean;
   notes?: string;
 }
 
@@ -84,4 +85,6 @@ export interface DashboardStats {
   monthlyNet: number;
   categoryBreakdown: { category: string; amount: number }[];
   netWorthHistory: { date: string; net_worth: number }[];
+  monthlySpendHistory: { month: string; spending: number }[]; // NEW
+  averageMonthlySpend: number; // NEW
 }

@@ -13,7 +13,7 @@ export default async function handler(
     // Get investment accounts (the ones we want to manually update)
     const investmentAccounts = await sql`
       SELECT * FROM accounts 
-      WHERE name IN ('Mutual Funds(V)', 'Stocks (V)', 'Qualcomm Shares')
+      WHERE show_in_investments = true
       ORDER BY name
     `;
 

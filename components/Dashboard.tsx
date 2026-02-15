@@ -116,7 +116,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       {/* Summary Cards - Now with 4 cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <div className="stat-card">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
@@ -170,7 +170,69 @@ export default function Dashboard() {
 
       </div>
 
+      
+      <div className="card p-6">
+        <h3 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--text-primary)' }}>
+          <span className="mr-2">📅</span>
+          Monthly Spending (Last 12 Months)
+        </h3>
+        
+        {stats.monthlySpendHistory && stats.monthlySpendHistory.length > 0 ? (
+          <>
+            <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
+              <div className="text-sm font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>
+                Average Monthly Spend
+              </div>
+              <div className="text-3xl font-bold" style={{ color: 'var(--blue-bright)' }}>
+                {formatINR(toNumber(stats.averageMonthlySpend))}
+              </div>
+            </div>
+            
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={stats.monthlySpendHistory}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="var(--text-muted)"
+                  style={{ fontSize: '11px', fontFamily: 'Space Mono' }}
+                  tickFormatter={(value) => {
+                    const [year, month] = value.split('-');
+                    return `${month}/${year.slice(2)}`;
+                  }}
+                />
+                <YAxis 
+                  stroke="var(--text-muted)" 
+                  style={{ fontSize: '12px', fontFamily: 'Space Mono' }}
+                  tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'var(--bg-tertiary)', 
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    fontFamily: 'Space Mono'
+                  }}
+                  formatter={(value) => [formatINR(toNumber(value)), 'Spending']}
+                  labelFormatter={(label) => {
+                    const [year, month] = label.split('-');
+                    const date = new Date(parseInt(year), parseInt(month) - 1);
+                    return date.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+                  }}
+                />
+                <Bar dataKey="spending" fill="var(--error)" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </>
+        ) : (
+          <p className="text-center py-12" style={{ color: 'var(--text-muted)' }}>
+            Not enough data yet
+          </p>
+        )}
+      </div>
+
       {/* Charts */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category Breakdown - Current Month */}
         <div className="card p-6">

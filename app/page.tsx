@@ -17,7 +17,7 @@ export default function Home() {
         borderColor: 'var(--border-color)' 
       }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex flex-col sm:flex-row justify-between items-center py-4 space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{
                 background: 'linear-gradient(135deg, var(--blue-primary), var(--accent-cyan))'
@@ -25,7 +25,7 @@ export default function Home() {
                 <span className="text-2xl">💰</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                <h1 className="text-xl sm:text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
                   Expense Tracker
                 </h1>
                 <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -34,21 +34,19 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="flex space-x-2">
+            <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
               {[
                 { id: 'dashboard', label: 'Dashboard', icon: '📊' },
                 { id: 'new', label: 'New', icon: '➕' },
                 { id: 'list', label: 'History', icon: '📋' },
                 { id: 'accounts', label: 'Accounts', icon: '🏦' },
-                { id: 'investments', label: 'Investments', icon: '💎' },
+                { id: 'investments', label: 'Invest', icon: '💎' },
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`px-4 py-2 rounded-lg font-bold transition-all duration-200 flex items-center space-x-2 ${
-                    activeTab === tab.id
-                      ? 'shadow-lg'
-                      : ''
+                  className={`px-3 sm:px-4 py-2 rounded-lg font-bold transition-all duration-200 flex items-center space-x-1 sm:space-x-2 text-sm ${
+                    activeTab === tab.id ? 'shadow-lg' : ''
                   }`}
                   style={{
                     backgroundColor: activeTab === tab.id ? 'var(--blue-primary)' : 'transparent',
@@ -56,8 +54,8 @@ export default function Home() {
                     border: activeTab === tab.id ? 'none' : '1px solid var(--border-color)'
                   }}
                 >
-                  <span>{tab.icon}</span>
-                  <span>{tab.label}</span>
+                  <span className="text-lg sm:text-xl">{tab.icon}</span>
+                  <span className="hidden sm:inline">{tab.label}</span>
                 </button>
               ))}
             </div>

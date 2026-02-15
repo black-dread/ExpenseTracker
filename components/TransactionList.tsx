@@ -8,26 +8,31 @@ export default function TransactionList() {
   const [transactions, setTransactions] = useState<TransactionWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<TransactionType | 'all'>('all');
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 25;
 
   useEffect(() => {
     fetchTransactions();
-  }, [filterType]);
+  }, [filterType, page]);
 
   const fetchTransactions = async () => {
     setLoading(true);
     try {
-      const url = filterType === 'all' 
-        ? '/api/transactions?limit=25' 
-        : `/api/transactions?limit=25&type=${filterType}`;
+      const offset = (page - 1) * limit;
+      const url = `/api/transactions?limit=${limit}&offset=${offset}${filterType !== 'all' ? `&type=${filterType}` : ''}`;
       const res = await fetch(url);
       const data = await res.json();
-      setTransactions(data);
+      setTransactions(data.transactions);
+      setTotal(data.total);
     } catch (error) {
       console.error('Error fetching transactions:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const totalPages = Math.ceil(total / limit);
 
   const getTransactionDetails = (txn: TransactionWithDetails) => {
     switch (txn.transaction_type) {
@@ -58,8 +63,8 @@ export default function TransactionList() {
 
   return (
     <div className="card animate-slide-in">
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{
               background: 'linear-gradient(135deg, var(--blue-primary), var(--accent-cyan))'
@@ -67,21 +72,24 @@ export default function TransactionList() {
               <span className="text-2xl">📋</span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              <h2 className="text-xl sm:text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 Transaction History
               </h2>
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                Last 25 transactions {filterType !== 'all' && `(${filterType})`}
+              <p className="text-xs sm:text-sm" style={{ color: 'var(--text-muted)' }}>
+                Showing {transactions.length} of {total} transactions {filterType !== 'all' && `(${filterType})`}
               </p>
             </div>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {(['all', 'expense', 'income', 'transfer', 'debt'] as const).map(type => (
               <button
                 key={type}
-                onClick={() => setFilterType(type)}
-                className={`px-4 py-2 rounded-lg font-bold transition-all duration-200 border text-sm ${
+                onClick={() => {
+                  setFilterType(type);
+                  setPage(1); // Reset to page 1 when changing filter
+                }}
+                className={`px-3 py-2 rounded-lg font-bold transition-all duration-200 border text-xs sm:text-sm ${
                   filterType === type ? 'shadow-lg' : ''
                 }`}
                 style={{
@@ -99,7 +107,7 @@ export default function TransactionList() {
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-lg border" style={{ borderColor: 'var(--border-color)' }}>
+        <div className="overflow-x-auto rounded-lg border table-container" style={{ borderColor: 'var(--border-color)' }}>
           <table className="min-w-full">
             <thead>
               <tr style={{ backgroundColor: 'var(--bg-tertiary)' }}>
@@ -125,12 +133,12 @@ export default function TransactionList() {
                   </td>
                   <td className="px-4 py-3 text-sm" style={{ color: 'var(--text-primary)' }}>
                     {txn.name}
-                    {txn.is_benki && (
+                    {txn.is_refund && (
                       <span className="ml-2 text-xs px-2 py-1 rounded font-bold" style={{
-                        backgroundColor: 'rgba(168, 85, 247, 0.15)',
-                        color: '#a855f7'
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                        color: 'var(--success)'
                       }}>
-                        BENKI
+                        REFUND
                       </span>
                     )}
                   </td>
@@ -154,6 +162,47 @@ export default function TransactionList() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              Page {page} of {totalPages}
+            </div>
+            
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-4 py-2 rounded-lg font-bold transition-all duration-200 border"
+                style={{
+                  backgroundColor: page === 1 ? 'var(--bg-tertiary)' : 'var(--blue-primary)',
+                  color: page === 1 ? 'var(--text-muted)' : 'white',
+                  borderColor: 'var(--border-color)',
+                  cursor: page === 1 ? 'not-allowed' : 'pointer',
+                  opacity: page === 1 ? 0.5 : 1
+                }}
+              >
+                ← Previous
+              </button>
+              
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-4 py-2 rounded-lg font-bold transition-all duration-200 border"
+                style={{
+                  backgroundColor: page === totalPages ? 'var(--bg-tertiary)' : 'var(--blue-primary)',
+                  color: page === totalPages ? 'var(--text-muted)' : 'white',
+                  borderColor: 'var(--border-color)',
+                  cursor: page === totalPages ? 'not-allowed' : 'pointer',
+                  opacity: page === totalPages ? 0.5 : 1
+                }}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        )}
 
         {transactions.length === 0 && (
           <div className="text-center py-20">

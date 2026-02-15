@@ -214,3 +214,57 @@ select.input-field {
   background-position: right 0.75rem center;
   padding-right: 2.5rem;
 }
+
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .stat-card {
+    padding: 1rem;
+  }
+  
+  .card {
+    margin: 0.5rem;
+  }
+  
+  /* Make tables horizontally scrollable on mobile */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Adjust font sizes for mobile */
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  /* Make buttons touch-friendly */
+  .btn-primary,
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Navigation */
+  nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger tap targets */
+  button, a, input, select {
+    min-height: 44px;
+  }
+  
+  /* Remove hover effects on touch devices */
+  .stat-card:hover,
+  .card:hover {
+    transform: none;
+  }
+}
