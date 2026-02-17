@@ -106,7 +106,7 @@ Object.keys(groupedAccounts).forEach(type => {
 // Flatten into single sorted array
 const sortedAccounts = groupOrder.flatMap(type => groupedAccounts[type] || []);
   // Only include accounts where include_in_net_worth is true for total balance
-  const netWorthAccounts = accounts.filter(a => !a.is_virtual && a.include_in_net_worth !== false);
+  const netWorthAccounts = accounts.filter(a => a.is_virtual && a.include_in_net_worth !== false);
   const totalBalance = netWorthAccounts.reduce((sum, acc) => sum + toNumber(acc.balance), 0);
 
   const getAccountIcon = (type: string) => {
